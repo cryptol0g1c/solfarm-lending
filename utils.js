@@ -115,6 +115,9 @@ const getCoinsUsdValue = async (_tokenId) => {
 
   try {
 
+    if (_tokenId == undefined || _tokenId == null)
+      throw ("Missing Parameters");
+
     let BASE_URL = 'https://api.coingecko.com/api/v3';
     let URL_PARAMS = `/simple/price?ids=${_tokenId}&vs_currencies=usd`
 
@@ -128,7 +131,7 @@ const getCoinsUsdValue = async (_tokenId) => {
     return result.data[_tokenId].usd;
 
   } catch (error) {
-    log(error.message);
+    console.log(error.message);
     throw (error);
   }
 
@@ -171,14 +174,13 @@ const getReservePoolData = async (
     const platformAmountWads = new BigNumber(liquidity.platformAmountWads);
     const availableAmount = new BigNumber(liquidity.availableAmount);
 
-    const borrowedAmountWads = borrowedAmount.div(WAD);
-    const platformAmount = platformAmountWads.div(WAD);
-    const availableAmountWei = availableAmount
-    const totalSupply = availableAmountWei.plus(borrowedAmountWads).minus(platformAmount);
-
+    const totalSupply = availableAmount
+                        .plus(borrowedAmount.div(WAD))
+                        .minus(platformAmountWads.div(WAD));
 
     return {
       userTokenBalance: ATABalance,
+      tokenUsdPrice: _tokenPrice,
       userUSDBalance: ATABalance * _tokenPrice,
       totalSupply: totalSupply.div(10 ** liquidity.mintDecimals).toNumber(),
       tvl: (totalSupply.div(10 ** liquidity.mintDecimals).toNumber() * _tokenPrice),
