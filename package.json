@@ -1,0 +1,27 @@
+{
+  "name": "solfarm-lending",
+  "version": "0.0.1",
+  "description": "Fetch Solfarm lending pool info",
+  "main": "index.js",
+  "dependencies": {
+    "@project-serum/borsh": "^0.2.2",
+    "@solana/spl-token": "^0.1.8",
+    "@solana/web3.js": "^1.30.1",
+    "axios": "^0.24.0",
+    "bignumber.js": "^9.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cryptol0g1c/solfarm-lending.git"
+  },
+  "author": "Cryptologic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cryptol0g1c/solfarm-lending/issues"
+  },
+  "homepage": "https://github.com/cryptol0g1c/solfarm-lending#readme"
+}
