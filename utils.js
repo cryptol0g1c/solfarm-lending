@@ -162,6 +162,8 @@ const getReservePoolData = async (
 
     const ATABalance = (await getAccountInfo(associatedAccount)).value.data.parsed.info.tokenAmount.uiAmount;
 
+    const bnATABalance = new BigNumber(ATABalance);
+
     const reserveAccountInfo = await getAccountInfo(_reserveAccount);
 
     const {
@@ -184,19 +186,32 @@ const getReservePoolData = async (
     const availableAmount = new BigNumber(liquidity.availableAmount);
 
     const totalSupply = availableAmount
-                        .plus(borrowedAmount.div(WAD))
-                        .minus(platformAmountWads.div(WAD));
+      .plus(borrowedAmount.div(WAD))
+      .minus(platformAmountWads.div(WAD));
 
-    const tvl = totalSupply.div(10 ** liquidity.mintDecimals).toNumber() * _tokenPrice;
+    const bnTokenPrice = new BigNumber(_tokenPrice);
 
-    const userTokenBalance = ATABalance * parsedCollateralMintSupply.toNumber();
+    const tvl =
+      totalSupply
+        .div(10 ** liquidity.mintDecimals)
+        .multipliedBy(bnTokenPrice);
+
+    const userTokenBalance =
+      bnATABalance
+        .multipliedBy(totalSupply
+          .div(10 ** liquidity.mintDecimals)
+          .div(parsedCollateralMintSupply));
+
+    const userUSDBalance = bnATABalance
+      .multipliedBy(tvl
+        .div(parsedCollateralMintSupply));
 
     return {
-      userTokenBalance,
-      tokenUsdPrice: _tokenPrice,
-      userUSDBalance: ATABalance * (tvl / parsedCollateralMintSupply.toNumber()),
-      totalSupply: totalSupply.div(10 ** liquidity.mintDecimals).toNumber(),
-      tvl
+      userTokenBalance: userTokenBalance.dp(4).toNumber(),
+      userUSDBalance: userUSDBalance.dp(4).toNumber(),
+      tvl: tvl.dp(3).toNumber(),
+      tokenUsdPrice: bnTokenPrice.dp(3).toNumber(),
+      totalSupply: totalSupply.div(10 ** liquidity.mintDecimals).dp(3).toNumber()
     };
   } catch (error) {
     console.log(`[-] Error found ${error}`);
