@@ -164,6 +164,15 @@ const getReservePoolData = async (
 
     const reserveAccountInfo = await getAccountInfo(_reserveAccount);
 
+    const {
+      info
+    } = (await getAccountInfo(_collateralTokenMint)).value.data.parsed;
+
+    const collateralTokenMintSupply = new BigNumber(info.supply)
+    const collateralTokenMintDecimals = new BigNumber(10 ** info.decimals);
+
+    const parsedCollateralMintSupply = collateralTokenMintSupply.div(collateralTokenMintDecimals);
+
     const reserveData = reserveAccountInfo.value.data[0];
 
     const {
@@ -178,12 +187,14 @@ const getReservePoolData = async (
                         .plus(borrowedAmount.div(WAD))
                         .minus(platformAmountWads.div(WAD));
 
+    const tvl = totalSupply.div(10 ** liquidity.mintDecimals).toNumber() * _tokenPrice
+
     return {
       userTokenBalance: ATABalance,
       tokenUsdPrice: _tokenPrice,
-      userUSDBalance: ATABalance * _tokenPrice,
+      userUSDBalance: ATABalance * (tvl / parsedCollateralMintSupply.toNumber()),
       totalSupply: totalSupply.div(10 ** liquidity.mintDecimals).toNumber(),
-      tvl: (totalSupply.div(10 ** liquidity.mintDecimals).toNumber() * _tokenPrice),
+      tvl
     };
   } catch (error) {
     console.log(`[-] Error found ${error}`);
