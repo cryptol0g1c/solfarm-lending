@@ -187,10 +187,12 @@ const getReservePoolData = async (
                         .plus(borrowedAmount.div(WAD))
                         .minus(platformAmountWads.div(WAD));
 
-    const tvl = totalSupply.div(10 ** liquidity.mintDecimals).toNumber() * _tokenPrice
+    const tvl = totalSupply.div(10 ** liquidity.mintDecimals).toNumber() * _tokenPrice;
+
+    const userTokenBalance = ATABalance * parsedCollateralMintSupply.toNumber();
 
     return {
-      userTokenBalance: ATABalance,
+      userTokenBalance,
       tokenUsdPrice: _tokenPrice,
       userUSDBalance: ATABalance * (tvl / parsedCollateralMintSupply.toNumber()),
       totalSupply: totalSupply.div(10 ** liquidity.mintDecimals).toNumber(),
